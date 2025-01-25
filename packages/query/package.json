@@ -1,5 +1,5 @@
 {
-  "name": "@proof/parser",
+  "name": "@proof/query",
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts",
@@ -13,9 +13,9 @@
     "./package.json": "./package.json"
   },
   "nx": {
-    "sourceRoot": "packages/parser/src",
+    "sourceRoot": "packages/query/src",
     "projectType": "library",
-    "name": "parser"
+    "name": "query"
   },
   "dependencies": {}
 }
