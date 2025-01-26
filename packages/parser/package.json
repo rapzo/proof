@@ -17,5 +17,7 @@
     "projectType": "library",
     "name": "parser"
   },
-  "dependencies": {}
+  "dependencies": {
+    "csv": "^6.3.11"
+  }
 }
