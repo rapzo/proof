@@ -1,19 +1,38 @@
 import { createConnection } from 'node:net';
-import { query } from '@proof/query';
+import { createInterface } from 'node:readline/promises';
 
-const client = createConnection({ port: 3000 }, async () => {
-  console.log('connected to server!');
+// import { COMMANDS } from '@proof/dsl';
 
-  const response = await query();
-  client.write(response);
+const [, , arg = 3000] = process.argv;
+
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  prompt: '> ',
+});
+
+const port = !arg || isNaN(Number(arg)) ? 3000 : Number(arg);
+
+const client = createConnection({ port }, async () => {
+  rl.prompt();
+
+  rl.on('line', async (line) => {
+    client.write(line.trim());
+  });
 });
 
 client.on('data', (data) => {
   console.log(data.toString());
+  rl.prompt();
 });
 
 client.on('end', () => {
   console.log('disconnected from server');
 
   process.exit(0);
+});
+
+client.on('error', (_error) => {
+  console.log(`no server found at port ${port}`);
+  process.exit(1);
 });

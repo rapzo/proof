@@ -10,7 +10,10 @@
       "path": "./client"
     },
     {
-      "path": "./store"
+      "path": "./database"
+    },
+    {
+      "path": "./dsl"
     }
   ]
 }

@@ -21,7 +21,7 @@
   ],
   "references": [
     {
-      "path": "../store/tsconfig.lib.json"
+      "path": "../database/tsconfig.lib.json"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@proof/store",
+  "name": "@proof/database",
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts",
@@ -17,5 +17,7 @@
     "projectType": "library",
     "name": "store"
   },
-  "dependencies": {}
+  "dependencies": {
+    "csv": "^6.3.11"
+  }
 }

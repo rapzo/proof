@@ -1,5 +1,5 @@
 import { createServer } from 'node:net';
-import { ingest, query } from '@proof/store';
+import { ingest, query } from '@proof/database';
 import { createReadStream } from 'node:fs';
 
 const [, , file] = process.argv;
@@ -9,14 +9,23 @@ async function main() {
 
   const server = createServer((socket) => {
     socket.on('data', async (data) => {
-      // socket.write(result);
+      try {
+        const queryResult = await query(table, data.toString());
 
-      const queryResult = await query(table, data.toString());
-      console.log(queryResult);
+        socket.write(queryResult);
+      } catch (error) {
+        if (error instanceof Error) {
+          socket.write(error.message);
+        }
+
+        server.close();
+
+        throw error;
+      }
     });
   });
 
-  server.listen(3000);
+  return server.listen(3000);
 }
 
 main().catch(console.error);

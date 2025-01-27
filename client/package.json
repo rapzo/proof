@@ -22,9 +22,6 @@
           "bundle": true,
           "main": "client/src/main.ts",
           "tsConfig": "client/tsconfig.app.json",
-          "assets": [
-            "client/src/assets"
-          ],
           "esbuildOptions": {
             "sourcemap": true,
             "outExtension": {
@@ -41,6 +38,18 @@
                 ".js": ".js"
               }
             }
+          },
+          "release": {
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+            },
+            "outputPath": "bin",
+            "outputFileName": "client",
+            "declaration": false,
+            "deleteOutputPath": false
           }
         }
       },

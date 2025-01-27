@@ -1,5 +1,5 @@
 export default {
-  displayName: 'store',
+  displayName: 'dsl',
   preset: '../jest.preset.js',
   testEnvironment: 'node',
   transform: {

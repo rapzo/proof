@@ -45,16 +45,23 @@ to split responsabilities into domains.
 In the `proof` project all sources should be located under the `packages`
 folder with the following responsabilities:
 
-| path              | description                                                       |
-| ----------------- | ----------------------------------------------------------------- |
-| `packages/app`    | creates executables for with and without Nx                       |
-| `packages/parser` | processes the CSV file and loads it into memory                   |
-| `packages/query`  | processes the query input and operates it over the data in memory |
+| path       | description |
+| ---------- | ----------- |
+| `server`   |             |
+| `client`   |             |
+| `dsl`      |             |
+| `database` |             |
 
-## Useful commands
+## Commands
 
-### TL;DR
-
-```bash
-npm install && npm start
 ```
+npm run <command>
+```
+
+| command   | description |
+| --------- | ----------- |
+| `server`  |             |
+| `client`  |             |
+| `build`   |             |
+| `test`    |             |
+| `release` |             |
