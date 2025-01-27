@@ -3,13 +3,13 @@
 // client/src/main.ts
 var import_node_net = require("node:net");
 var import_promises = require("node:readline/promises");
-var [, , arg = 3e3] = process.argv;
+var [, , arg] = process.argv;
 var rl = (0, import_promises.createInterface)({
   input: process.stdin,
   output: process.stdout,
   prompt: "> "
 });
-var port = !arg || isNaN(Number(arg)) ? 3e3 : Number(arg);
+var port = isNaN(Number(arg)) ? 3e3 : Number(arg);
 var client = (0, import_node_net.createConnection)({ port }, async () => {
   rl.prompt();
   rl.on("line", async (line) => {

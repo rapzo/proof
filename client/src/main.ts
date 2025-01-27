@@ -1,9 +1,7 @@
 import { createConnection } from 'node:net';
 import { createInterface } from 'node:readline/promises';
 
-// import { COMMANDS } from '@proof/dsl';
-
-const [, , arg = 3000] = process.argv;
+const [, , arg] = process.argv;
 
 const rl = createInterface({
   input: process.stdin,
@@ -11,7 +9,7 @@ const rl = createInterface({
   prompt: '> ',
 });
 
-const port = !arg || isNaN(Number(arg)) ? 3000 : Number(arg);
+const port = isNaN(Number(arg)) ? 3000 : Number(arg);
 
 const client = createConnection({ port }, async () => {
   rl.prompt();

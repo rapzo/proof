@@ -49,7 +49,6 @@ folder with the following responsabilities:
 | ---------- | ----------- |
 | `server`   |             |
 | `client`   |             |
-| `dsl`      |             |
 | `database` |             |
 
 ## Commands

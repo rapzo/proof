@@ -3,46 +3,80 @@
 // server/src/main.ts
 var import_node_net = require("node:net");
 
-// database/src/lib/store.ts
+// database/src/lib/generate.ts
+var import_csv = require("csv");
+
+// database/src/lib/ingest.ts
+var import_csv2 = require("csv");
+
+// database/src/lib/table.ts
 function createTable() {
   return {
-    columns: []
+    columns: /* @__PURE__ */ new Set(),
+    rows: []
   };
 }
-function addRow(table, row) {
-  table.columns.forEach((column, i) => {
-    column.rows.push(row[i]);
-  });
+function addColumn(table, name) {
+  table.columns.add(name);
+  return table;
+}
+function addRow(table, input) {
+  if (input.length !== table.columns.size) {
+    throw new Error("Column count mismatch");
+  }
+  table.rows.push(input);
+  return table;
 }
 
 // database/src/lib/ingest.ts
-var import_csv = require("csv");
 async function ingest(stream) {
   const table = createTable();
-  for await (const record of stream.pipe((0, import_csv.parse)())) {
-    addRow(table, record);
+  const data = stream.pipe((0, import_csv2.parse)());
+  let hasHeader = false;
+  for await (const record of data) {
+    if (!hasHeader && Array.isArray(record)) {
+      record.forEach((name) => addColumn(table, name));
+      hasHeader = true;
+    } else {
+      addRow(table, record);
+    }
   }
   return table;
 }
 
-// database/src/lib/generate.ts
-var import_csv2 = require("csv");
-
 // database/src/lib/query.ts
+var grammar = /^(PROJECT)\s+([,\w\s*]+)\s*(?:(FILTER)\s+(\w+)\s*(>|=)\s*"([^"]*)")?$/;
 function query(table, input) {
-  return "query";
+  console.log(input);
+  if (!grammar.test(input)) {
+    throw new Error("Not a valid query");
+  }
+  const [, , columns, operation, column, value] = input.match(
+    grammar
+  );
+  console.log(columns, operation, column, value);
+  const result = {};
+  columns.split(",").forEach((col) => {
+    const column2 = col.trim();
+    const index = Array.from(table.columns).indexOf(column2);
+    if (!result[column2]) {
+      result[column2] = [];
+    }
+    result[column2].push(table.rows[index].toString());
+  });
+  return result;
 }
 
 // server/src/main.ts
 var import_node_fs = require("node:fs");
 var [, , file] = process.argv;
 async function main() {
-  const table = await ingest(file ? (0, import_node_fs.createReadStream)(file) : process.stdin);
+  const table = await ingest(!file ? process.stdin : (0, import_node_fs.createReadStream)(file));
   const server = (0, import_node_net.createServer)((socket) => {
     socket.on("data", async (data) => {
       try {
         const queryResult = await query(table, data.toString());
-        socket.write(queryResult);
+        socket.write(JSON.stringify(queryResult));
       } catch (error) {
         if (error instanceof Error) {
           socket.write(error.message);

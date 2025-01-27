@@ -5,14 +5,14 @@ import { createReadStream } from 'node:fs';
 const [, , file] = process.argv;
 
 async function main() {
-  const table = await ingest(file ? createReadStream(file) : process.stdin);
+  const table = await ingest(!file ? process.stdin : createReadStream(file));
 
   const server = createServer((socket) => {
     socket.on('data', async (data) => {
       try {
         const queryResult = await query(table, data.toString());
 
-        socket.write(queryResult);
+        socket.write(JSON.stringify(queryResult));
       } catch (error) {
         if (error instanceof Error) {
           socket.write(error.message);
