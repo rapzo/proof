@@ -1,16 +1,16 @@
 {
   "extends": "./tsconfig.base.json",
-  "compileOnSave": false,
+  "compileOnSave": true,
   "files": [],
   "references": [
     {
-      "path": "./packages/app"
+      "path": "./server"
     },
     {
-      "path": "./packages/parser"
+      "path": "./client"
     },
     {
-      "path": "./packages/query"
+      "path": "./store"
     }
   ]
 }

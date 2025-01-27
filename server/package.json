@@ -1,0 +1,75 @@
+{
+  "name": "@proof/server",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "server",
+    "projectType": "application",
+    "sourceRoot": "server/src",
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "platform": "node",
+          "outputPath": "dist/server",
+          "format": [
+            "cjs"
+          ],
+          "bundle": true,
+          "main": "server/src/main.ts",
+          "tsConfig": "server/tsconfig.app.json",
+          "assets": [
+            "server/src/assets"
+          ],
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        },
+        "configurations": {
+          "development": {},
+          "production": {
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+            }
+          }
+        }
+      },
+      "serve": {
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "server:build",
+          "runBuildTargetDependencies": false,
+          "port": 0
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "server:build:development"
+          },
+          "production": {
+            "buildTarget": "server:build:production"
+          }
+        }
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      }
+    }
+  },
+  "dependencies": {}
+}

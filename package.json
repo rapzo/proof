@@ -8,7 +8,8 @@
     "lint": "nx run-many --target=lint --all",
     "format": "nx run-many --target=format --all",
     "typecheck": "nx run-many --target=typecheck --all",
-    "start": "nx run app:serve"
+    "client": "nx serve client",
+    "server": "nx serve server"
   },
   "private": true,
   "devDependencies": {
@@ -38,7 +39,12 @@
     "typescript-eslint": "^8.13.0"
   },
   "workspaces": [
-    "packages/*"
+    "server",
+    "client",
+    "loader",
+    "query",
+    "ingest",
+    "store"
   ],
   "dependencies": {}
 }
