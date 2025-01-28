@@ -9,7 +9,8 @@
     "format": "nx run-many --target=format --all",
     "typecheck": "nx run-many --target=typecheck --all",
     "client": "nx serve client",
-    "server": "nx serve server"
+    "server": "nx serve server",
+    "release": "nx run-many --target=build --configurations=release --projects=server,client"
   },
   "private": true,
   "devDependencies": {

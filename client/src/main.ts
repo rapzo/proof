@@ -1,36 +1,70 @@
-import { createConnection } from 'node:net';
+import { createConnection, Socket } from 'node:net';
 import { createInterface } from 'node:readline/promises';
 
-const [, , arg] = process.argv;
+const port = !isNaN(Number(process.env.PORT)) ? Number(process.env.PORT) : 3000;
 
-const rl = createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  prompt: '> ',
-});
+const [, , ...arg] = process.argv;
 
-const port = isNaN(Number(arg)) ? 3000 : Number(arg);
+async function main() {
+  const command = arg.join(' ').trim();
 
-const client = createConnection({ port }, async () => {
-  rl.prompt();
+  const client = command
+    ? createClient(command)
+    : createInteractiveClient(port);
 
-  rl.on('line', async (line) => {
-    client.write(line.trim());
+  client.on('error', () => {
+    console.log(`no server found at port ${port}`);
+    process.exit(1);
   });
-});
+}
 
-client.on('data', (data) => {
-  console.log(data.toString());
-  rl.prompt();
-});
+const createInteractiveClient = (port: number): Socket => {
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: '> ',
+  });
 
-client.on('end', () => {
-  console.log('disconnected from server');
+  const client = createConnection({ port }, () => {
+    rl.on('line', (line) => {
+      client.write(line.trim());
+    });
+  })
+    .on('data', (data) => {
+      try {
+        console.log(JSON.stringify(JSON.parse(data.toString()), null, 2));
+      } catch {
+        console.log(data.toString());
+      } finally {
+        rl.prompt();
+      }
+    })
+    .on('connect', () => {
+      console.log('connected to server');
+      rl.prompt();
+    })
+    .on('end', () => {
+      console.log('disconnected from server');
+      process.exit(0);
+    });
 
-  process.exit(0);
-});
+  return client;
+};
 
-client.on('error', (_error) => {
-  console.log(`no server found at port ${port}`);
-  process.exit(1);
-});
+const createClient = (command: string): Socket => {
+  const client = createConnection({ port }, () => {
+    client.write(command);
+  }).on('data', (data) => {
+    try {
+      console.log(JSON.stringify(JSON.parse(data.toString()), null, 2));
+    } catch {
+      console.log(data.toString());
+    } finally {
+      client.end();
+    }
+  });
+
+  return client;
+};
+
+main().catch(console.error);
