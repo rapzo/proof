@@ -1,10 +1,17 @@
-const fs = require('fs');
-const { randomUUID } = require('node:crypto');
-const { faker } = require('@faker-js/faker');
+import fs from 'fs';
+import { randomUUID } from 'node:crypto';
+import { faker } from '@faker-js/faker';
 
-const columns = ['id', 'name', 'age', 'job'];
+const Columns = {
+  ID: 'id',
+  NAME: 'name',
+  AGE: 'age',
+  JOB: 'job',
+};
 
+const columns = [Columns.ID, Columns.NAME, Columns.AGE, Columns.JOB];
 const rows = [];
+
 for (let i = 0; i < 50; i++) {
   const row = {
     id: randomUUID(),
@@ -16,7 +23,7 @@ for (let i = 0; i < 50; i++) {
 }
 
 const csvContent = [
-  columns.join(','), // header row
+  columns.join(','),
   ...rows.map((row) => columns.map((col) => row[col]).join(',')),
 ].join('\n');
 
