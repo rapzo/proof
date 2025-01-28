@@ -45,39 +45,21 @@ export function query(table: Table, input: string) {
   });
 
   const columnList = Array.from(table.columns);
+  const op = comparator(operator?.trim());
 
   for (const [, row] of table.rows) {
     if (operation && target && operator && value) {
-      const index = columnList.indexOf(target);
-
-      if (index === -1) {
-        throw new Error('Column not found');
-      }
-
-      const cell = row.get(index);
+      const column = target.trim();
+      const cell = row.get(columnList.indexOf(column));
 
       if (!cell) {
         throw new Error('Cell not found');
       }
 
-      if (operator === '=') {
-        if (cell.toString() === value) {
-          columns.forEach((col) => {
-            result[col].push(row.get(columnList.indexOf(col)));
-          });
-        }
-      } else if (operator === '>') {
-        if (cell > value) {
-          columns.forEach((col) => {
-            result[col].push(row.get(columnList.indexOf(col)));
-          });
-        }
-      } else if (operator === '<') {
-        if (cell < value) {
-          columns.forEach((col) => {
-            result[col].push(row.get(columnList.indexOf(col)));
-          });
-        }
+      if (op(cell, value)) {
+        columns.forEach((col) => {
+          result[col].push(row.get(columnList.indexOf(col)));
+        });
       }
     } else {
       columns.forEach((col) => {
@@ -87,4 +69,30 @@ export function query(table: Table, input: string) {
   }
 
   return result;
+}
+
+function comparator(operator?: string) {
+  switch (operator) {
+    case '=':
+      return (cell: DataType, value: string) =>
+        typeof cell === 'string'
+          ? cell.localeCompare(value) === 0
+          : cell === Number(value);
+    case '>':
+      return (cell: DataType, value: string) =>
+        typeof cell === 'string'
+          ? cell.localeCompare(value) > 0
+          : typeof cell === 'number'
+          ? cell > Number(value)
+          : false;
+    case '<':
+      return (cell: DataType, value: string) =>
+        typeof cell === 'string'
+          ? cell.localeCompare(value) < 0
+          : typeof cell === 'number'
+          ? cell < Number(value)
+          : false;
+    default:
+      return () => true;
+  }
 }
