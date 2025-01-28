@@ -1,20 +1,20 @@
-export type DataType = number | string;
+export type DataType = number | string | undefined;
 
 export type Cell = DataType;
 
-export type Row = Cell[];
+export type Row = Map<number, Cell>;
 
 export type Column = string;
 
 export type Table = {
   columns: Set<Column>;
-  rows: Row[];
+  rows: Map<number, Row>;
 };
 
 export function createTable(): Table {
   return {
     columns: new Set(),
-    rows: [],
+    rows: new Map(),
   };
 }
 
@@ -25,11 +25,37 @@ export function addColumn(table: Table, name: string): Table {
 }
 
 export function addRow(table: Table, input: DataType[]): Table {
-  if (input.length !== table.columns.size) {
-    throw new Error('Column count mismatch');
-  }
+  const row = new Map<number, Cell>();
 
-  table.rows.push(input);
+  input.forEach((cell, index) => {
+    row.set(index, cell);
+  });
+
+  table.rows.set(table.rows.size, row);
 
   return table;
+}
+
+export function getRow(table: Table, index: number): Row | void {
+  return table.rows.get(index);
+}
+
+export function getRows(table: Table): Row[] {
+  return Array.from(table.rows.values());
+}
+
+export function getColumn(table: Table, name: string): Cell[] {
+  const index = Array.from(table.columns).indexOf(name);
+
+  return Array.from(table.rows.values()).map((row) => row.get(index));
+}
+
+export function getCell(
+  table: Table,
+  rowIndex: number,
+  columnName: string
+): Cell {
+  const index = Array.from(table.columns).indexOf(columnName);
+
+  return table.rows.get(rowIndex)?.get(index);
 }

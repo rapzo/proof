@@ -1,36 +1,90 @@
-import { Table } from './table';
+import { assert } from 'node:console';
+import { Column, DataType, Table } from './table';
 
-export type COMMAND = 'PROJECT' | 'FILTER';
-
-export type OPERATOR = '=' | '>';
+type GrammarGroups = {
+  command: string;
+  targets: string;
+  operation?: string;
+  target?: string;
+  operator?: string;
+  value?: string;
+};
 
 // PROJECT col1, col2 FILTER col3 > "value"
 const grammar =
-  /^(PROJECT)\s+([,\w\s*]+)\s*(?:(FILTER)\s+(\w+)\s*(>|=)\s*"([^"]*)")?$/;
+  /^(?:(?<command>\w+)\s+(?<targets>[\w\s,]+))(?:\s+(?<operation>\w+)\s+(?<target>\w+)\s*(?<operator>[<>=]|(?:>=|<=))\s*"?(?<value>[^"]*)"?)?\s*$/;
 
 export function query(table: Table, input: string) {
-  console.log(input);
   if (!grammar.test(input)) {
     throw new Error('Not a valid query');
   }
 
-  const [, , columns, operation, column, value] = input.match(
-    grammar
-  ) as RegExpMatchArray;
-  console.log(columns, operation, column, value);
+  const { groups } = input.match(grammar) as RegExpMatchArray;
+  const { command, targets, operation, target, operator, value } =
+    groups as GrammarGroups;
 
-  const result: Record<string, string[]> = {};
+  const result: Record<Column, DataType[]> = {};
 
-  columns.split(',').forEach((col) => {
-    const column = col.trim();
-    const index = Array.from(table.columns).indexOf(column);
+  if (command !== 'PROJECT') {
+    throw new Error('Not a valid query');
+  }
 
-    if (!result[column]) {
-      result[column] = [];
-    }
+  const columns = targets
+    .trim()
+    .split(',')
+    .map((col) => col.trim());
 
-    result[column].push(table.rows[index].toString());
+  assert(columns.length > 0, 'No columns provided');
+  assert(
+    columns.every((col) => table.columns.has(col.trim())),
+    'Column not found'
+  );
+
+  columns.forEach((col) => {
+    result[col] = [];
   });
+
+  const columnList = Array.from(table.columns);
+
+  for (const [, row] of table.rows) {
+    if (operation && target && operator && value) {
+      const index = columnList.indexOf(target);
+
+      if (index === -1) {
+        throw new Error('Column not found');
+      }
+
+      const cell = row.get(index);
+
+      if (!cell) {
+        throw new Error('Cell not found');
+      }
+
+      if (operator === '=') {
+        if (cell.toString() === value) {
+          columns.forEach((col) => {
+            result[col].push(row.get(columnList.indexOf(col)));
+          });
+        }
+      } else if (operator === '>') {
+        if (cell > value) {
+          columns.forEach((col) => {
+            result[col].push(row.get(columnList.indexOf(col)));
+          });
+        }
+      } else if (operator === '<') {
+        if (cell < value) {
+          columns.forEach((col) => {
+            result[col].push(row.get(columnList.indexOf(col)));
+          });
+        }
+      }
+    } else {
+      columns.forEach((col) => {
+        result[col].push(row.get(columnList.indexOf(col)));
+      });
+    }
+  }
 
   return result;
 }
