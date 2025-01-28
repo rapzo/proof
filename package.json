@@ -8,9 +8,9 @@
     "lint": "nx run-many --target=lint --all",
     "format": "nx run-many --target=format --all",
     "typecheck": "nx run-many --target=typecheck --all",
-    "client": "nx serve client",
-    "server": "nx serve server",
-    "release": "nx run-many --target=build --configurations=release --projects=server,client"
+    "client": "nx run client:serve:development --args=example.csv",
+    "server": "nx run server:serve:development",
+    "release": "nx: nx run-many --target=build --projects=client,server --configuration=release --skip-nx-cache=true"
   },
   "private": true,
   "devDependencies": {

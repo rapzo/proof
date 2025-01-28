@@ -3,12 +3,12 @@ import { createInterface } from 'node:readline/promises';
 
 const port = !isNaN(Number(process.env.PORT)) ? Number(process.env.PORT) : 3000;
 
-const [, , ...arg] = process.argv;
+const [, , arg] = process.argv;
 
 async function main() {
-  const command = arg.join(' ').trim();
+  const command = arg.trim();
 
-  const client = command
+  const client = command.length
     ? createClient(command)
     : createInteractiveClient(port);
 

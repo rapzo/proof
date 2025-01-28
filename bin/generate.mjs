@@ -1,5 +1,6 @@
-import fs from 'fs';
 import { randomUUID } from 'node:crypto';
+import { writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { faker } from '@faker-js/faker';
 
 const Columns = {
@@ -27,4 +28,4 @@ const csvContent = [
   ...rows.map((row) => columns.map((col) => row[col]).join(',')),
 ].join('\n');
 
-fs.writeFileSync('example.csv', csvContent);
+writeFileSync(join(process.cwd(), 'example.csv'), csvContent);
