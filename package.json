@@ -9,7 +9,7 @@
     "format": "nx run-many --target=format --all",
     "typecheck": "nx run-many --target=typecheck --all",
     "client": "nx run client:serve:development",
-    "server": "nx run server:serve:development --args=example.csv",
+    "server": "nx run server:serve:development",
     "release": "nx: nx run-many --target=build --projects=client,server --configuration=release --skip-nx-cache=true"
   },
   "private": true,

@@ -1,5 +1,61 @@
 # Proof
 
+## Quick run
+
+First and foremost: download the internet!
+
+```
+npm install
+```
+
+From previously generated artifacts:
+
+In one terminal:
+
+```
+node bin/server.cjs example.csv
+```
+
+In another terminal:
+
+```
+node bin/client.cjs "PROJECT name, age FILTER age > 60"
+```
+
+or, for an interactive ui:
+
+```
+node bin/client.cjs
+```
+
+Or in development mode, powered by Nx:
+
+In one terminal:
+
+```
+npm run server -- --args=example.csv
+```
+
+In another terminal:
+
+```
+npm run client -- --args="PROJECT name, age FILTER age > 60"
+```
+
+or, for an interactive ui:
+
+```
+npm run client
+```
+
+To generate a larger, or different dataset and replace current `example.csv`:
+
+```
+node bin/generate.mjs
+```
+
+Change the source file for different types of data structures.
+
 ## Objectives
 
 ## 1. Data Loading:
@@ -95,17 +151,17 @@ More commands available, per project, from the Nx cli and/or VS Code extension.
 In one terminal:
 
 ```
-node bin/server.js example.csv
+node bin/server.cjs example.csv
 ```
 
 In another terminal:
 
 ```
-node bin/client.js "PROJECT name, age FILTER age > 60"
+node bin/client.cjs "PROJECT name, age FILTER age > 60"
 ```
 
 or, for an interactive ui:
 
 ```
-node bin/client.js
+node bin/client.cjs
 ```
